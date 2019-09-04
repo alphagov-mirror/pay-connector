@@ -758,11 +758,10 @@ public class ChargeService {
                     supplemental.getErrorMessage().ifPresent(errorMessage -> {
                         
                         if(errorMessage.length() > 50) {
-                            logger.info(String.format("Telephone payment message for charge x: code y message z"));
+                            logger.info(String.format("Telephone payment message for charge_provider_id of " + telephoneChargeRequest.getProviderId()+  "is longer than 50 characters. The message: " + errorMessage));
                         }
                         
-                        String truncatedMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 50));
-                        telephoneJSON.put("error_message", truncatedMessage);
+                        telephoneJSON.put("error_message", errorMessage.substring(0, Math.min(errorMessage.length(), 50)));
                     });
                 }
         );
