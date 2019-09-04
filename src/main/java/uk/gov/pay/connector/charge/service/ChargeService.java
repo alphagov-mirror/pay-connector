@@ -755,7 +755,15 @@ public class ChargeService {
         telephoneChargeRequest.getPaymentOutcome().getSupplemental().ifPresent(
                 supplemental -> {
                     supplemental.getErrorCode().ifPresent(errorCode -> telephoneJSON.put("error_code", errorCode));
-                    supplemental.getErrorMessage().ifPresent(errorMessage -> telephoneJSON.put("error_message", errorMessage));
+                    supplemental.getErrorMessage().ifPresent(errorMessage -> {
+                        
+                        if(errorMessage.length() > 50) {
+                            logger.info(String.format("Telephone payment message for charge x: code y message z"));
+                        }
+                        
+                        String truncatedMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 50));
+                        telephoneJSON.put("error_message", truncatedMessage);
+                    });
                 }
         );
 
