@@ -164,7 +164,7 @@ public class ChargeService {
                     telephoneChargeRequest.getProviderId(),
                     SupportedLanguage.ENGLISH
             );
-
+            
             chargeDao.persist(chargeEntity);
             return chargeEntity;
         });
@@ -744,9 +744,8 @@ public class ChargeService {
 
     private ExternalMetadata storeExtraFieldsInMetaData(TelephoneChargeCreateRequest telephoneChargeRequest) {
         HashMap<String, Object> telephoneJSON = new HashMap<>();
-        telephoneJSON.put("processor_id", telephoneChargeRequest.getProcessorId());
+        telephoneJSON.put("processor_id", telephoneChargeRequest.getProcessorId().substring(0, Math.min(telephoneChargeRequest.getProcessorId().length(), 50)));
         telephoneJSON.put("status", telephoneChargeRequest.getPaymentOutcome().getStatus());
-
         telephoneChargeRequest.getCreatedDate().ifPresent(createdDate -> telephoneJSON.put("created_date", createdDate));
         telephoneChargeRequest.getAuthorisedDate().ifPresent(authorisedDate -> telephoneJSON.put("authorised_date", authorisedDate));
         telephoneChargeRequest.getAuthCode().ifPresent(authCode -> telephoneJSON.put("auth_code", authCode));
@@ -754,11 +753,11 @@ public class ChargeService {
         telephoneChargeRequest.getPaymentOutcome().getCode().ifPresent(code -> telephoneJSON.put("code", code));
         telephoneChargeRequest.getPaymentOutcome().getSupplemental().ifPresent(
                 supplemental -> {
-                    supplemental.getErrorCode().ifPresent(errorCode -> telephoneJSON.put("error_code", errorCode));
+                    supplemental.getErrorCode().ifPresent(errorCode -> telephoneJSON.put("error_code", errorCode.substring(0, Math.min(errorCode.length(), 50))));
                     supplemental.getErrorMessage().ifPresent(errorMessage -> {
                         
                         if(errorMessage.length() > 50) {
-                            logger.info(String.format("Telephone payment message for charge_provider_id of " + telephoneChargeRequest.getProviderId()+  "is longer than 50 characters. The message: " + errorMessage));
+                            logger.info(String.format("Telephone payment message for charge_provider_id of " + telephoneChargeRequest.getProcessorId()+  " is longer than 50 characters and has been truncated and stored. The full message is: " + errorMessage));
                         }
                         
                         telephoneJSON.put("error_message", errorMessage.substring(0, Math.min(errorMessage.length(), 50)));
