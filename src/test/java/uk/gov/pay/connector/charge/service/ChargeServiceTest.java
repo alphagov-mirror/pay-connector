@@ -702,6 +702,60 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
+
+    @Test
+    public void shouldCreateATelephoneChargeAndNotTruncateMetaDataOf50Characters() {
+        String stringOf50 = StringUtils.repeat("*", 50);
+
+        Supplemental supplemental = new Supplemental(stringOf50, stringOf50);
+        PaymentOutcome paymentOutcome = new PaymentOutcome("failed", "P0050", supplemental);
+
+        Map<String, Object> metadata = Map.of(
+                "created_date", "2018-02-21T16:04:25Z",
+                "authorised_date", "2018-02-21T16:05:33Z",
+                "processor_id", stringOf50,
+                "auth_code", stringOf50,
+                "telephone_number", stringOf50,
+                "status", "failed",
+                "code", "P0050",
+                "error_code", stringOf50,
+                "error_message", stringOf50
+        );
+
+        TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
+                .withPaymentOutcome(paymentOutcome)
+                .withProcessorId(stringOf50)
+                .withAuthCode(stringOf50)
+                .withTelephoneNumber(stringOf50)
+                .build();
+
+        service.create(telephoneChargeCreateRequest, GATEWAY_ACCOUNT_ID);
+
+        ArgumentCaptor<ChargeEntity> chargeEntityArgumentCaptor = forClass(ChargeEntity.class);
+        verify(mockedChargeDao).persist(chargeEntityArgumentCaptor.capture());
+
+        ChargeEntity createdChargeEntity = chargeEntityArgumentCaptor.getValue();
+        assertThat(createdChargeEntity.getId(), is(CHARGE_ENTITY_ID));
+
+        assertThat(createdChargeEntity.getGatewayAccount().getId(), is(GATEWAY_ACCOUNT_ID));
+        assertThat(createdChargeEntity.getExternalId(), is(EXTERNAL_CHARGE_ID[0]));
+        assertThat(createdChargeEntity.getGatewayAccount().getCredentials(), is(emptyMap()));
+        assertThat(createdChargeEntity.getGatewayAccount().getGatewayName(), is("sandbox"));
+        assertThat(createdChargeEntity.getAmount(), is(100L));
+        assertThat(createdChargeEntity.getReference(), is(ServicePaymentReference.of("Some reference")));
+        assertThat(createdChargeEntity.getDescription(), is("Some description"));
+        assertThat(createdChargeEntity.getStatus(), is("AUTHORISATION ERROR"));
+        assertThat(createdChargeEntity.getEmail(), is("jane.doe@example.com"));
+        assertThat(createdChargeEntity.getCreatedDate(), is(ZonedDateTimeMatchers.within(3, ChronoUnit.SECONDS, ZonedDateTime.now(ZoneId.of("UTC")))));
+        assertThat(createdChargeEntity.getCardDetails().getLastDigitsCardNumber().toString(), is("1234"));
+        assertThat(createdChargeEntity.getCardDetails().getFirstDigitsCardNumber().toString(), is("123456"));
+        assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
+        assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is("01/19"));
+        assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
+        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
+        assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
+    }
     
     @Test
     public void shouldNotFindCharge() {
