@@ -53,7 +53,7 @@ public class StripeTransferOutRequestTest {
 
         final CaptureGatewayRequest captureGatewayRequest = CaptureGatewayRequest.valueOf(charge);
 
-        stripeTransferOutRequest = StripeTransferOutRequest.of(netTransferAmount, captureGatewayRequest, stripeGatewayConfig);
+        stripeTransferOutRequest = StripeTransferOutRequest.of(netTransferAmount, "123", captureGatewayRequest, stripeGatewayConfig);
     }
 
     @Test
