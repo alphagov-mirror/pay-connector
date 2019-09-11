@@ -748,9 +748,9 @@ public class ChargeService {
         telephoneJSON.put("status", telephoneChargeRequest.getPaymentOutcome().getStatus());
         telephoneChargeRequest.getCreatedDate().ifPresent(createdDate -> telephoneJSON.put("created_date", createdDate));
         telephoneChargeRequest.getAuthorisedDate().ifPresent(authorisedDate -> telephoneJSON.put("authorised_date", authorisedDate));
-        telephoneChargeRequest.getAuthCode().ifPresent(authCode -> telephoneJSON.put("auth_code", authCode));
-        telephoneChargeRequest.getTelephoneNumber().ifPresent(telephoneNumber -> telephoneJSON.put("telephone_number", telephoneNumber));
-        telephoneChargeRequest.getPaymentOutcome().getCode().ifPresent(code -> telephoneJSON.put("code", code));
+        telephoneChargeRequest.getAuthCode().ifPresent(authCode -> telephoneJSON.put("auth_code", authCode.substring(0, Math.min(authCode.length(), 50))));
+        telephoneChargeRequest.getTelephoneNumber().ifPresent(telephoneNumber -> telephoneJSON.put("telephone_number", telephoneNumber.substring(0, Math.min(telephoneNumber.length(), 50))));
+        telephoneChargeRequest.getPaymentOutcome().getCode().ifPresent(code -> telephoneJSON.put("code", code.substring(0, Math.min(code.length(), 50))));
         telephoneChargeRequest.getPaymentOutcome().getSupplemental().ifPresent(
                 supplemental -> {
                     supplemental.getErrorCode().ifPresent(errorCode -> telephoneJSON.put("error_code", errorCode.substring(0, Math.min(errorCode.length(), 50))));
