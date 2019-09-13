@@ -121,6 +121,13 @@ public class WorldpayPaymentProviderTest {
         CardAuthorisationGatewayRequest request = getCardAuthorisationRequest(authCardDetails);
         GatewayResponse<BaseAuthoriseResponse> response = paymentProvider.authorise(request);
         assertTrue(response.getBaseResponse().isPresent());
+        response.getBaseResponse().ifPresent(res -> {
+            assertThat(res.getGatewayParamsFor3ds().isPresent(), is(true));
+            assertThat(res.getGatewayParamsFor3ds().get().toAuth3dsDetailsEntity().getWorldpayChallengeAcsUrl(), is(notNullValue()));
+            assertThat(res.getGatewayParamsFor3ds().get().toAuth3dsDetailsEntity().getWorldpayChallengeTransactionId(), is(notNullValue()));
+            assertThat(res.getGatewayParamsFor3ds().get().toAuth3dsDetailsEntity().getWorldpayChallengePayload(), is(notNullValue()));
+            assertThat(res.getGatewayParamsFor3ds().get().toAuth3dsDetailsEntity().getThreeDsVersion(), is(notNullValue()));
+        });
     }
 
     @Test
