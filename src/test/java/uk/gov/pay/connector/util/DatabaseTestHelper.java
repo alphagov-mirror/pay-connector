@@ -114,7 +114,6 @@ public class DatabaseTestHelper {
                                 "        reference,\n" +
                                 "        version,\n" +
                                 "        email,\n" +
-                                "        provider_session_id,\n" +
                                 "        language,\n" +
                                 "        delayed_capture,\n" +
                                 "        corporate_surcharge,\n" +
