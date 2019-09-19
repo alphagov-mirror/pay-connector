@@ -3,6 +3,7 @@ package uk.gov.pay.connector.charge.validation.telephone;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.gov.pay.connector.charge.model.telephone.PaymentOutcome;
+import uk.gov.pay.connector.charge.model.telephone.Supplemental;
 import uk.gov.pay.connector.charge.model.telephone.TelephoneChargeCreateRequest;
 
 import javax.validation.ConstraintViolation;
@@ -34,15 +35,15 @@ public class CardExpiryValidatorTest {
                 .withProviderId("1PROV")
                 .withLastFourDigits("1234")
                 .withFirstSixDigits("123456")
-                .withCardType("visa")
-                .withPaymentOutcome(new PaymentOutcome("success"));
+                .withCardType("visa");
     }
 
     @Test
-    public void failsValidationForInvalidMonth00() {
+    public void failsValidationForInvalidMonth00AndStatusOfSuccess() {
 
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
                 .withCardExpiry("00/99")
+                .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();
 
         Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
@@ -52,10 +53,11 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void failsValidationForInvalidMonth99() {
+    public void failsValidationForInvalidMonth99AndStatusOfSuccess() {
 
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
                 .withCardExpiry("99/99")
+                .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();
 
         Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
@@ -65,10 +67,39 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void passesValidationForValidCardExpiry() {
+    public void failsValidationForInvalidMonth00AndStatusOfFailed() {
+
+        TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
+                .withCardExpiry("00/99")
+                .withPaymentOutcome(new PaymentOutcome("failed", "P0050", new Supplemental()))
+                .build();
+
+        Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [card_expiry] must have valid MM/YY"));
+    }
+
+    @Test
+    public void failsValidationForInvalidMonth99AndStatusOfFailed() {
+
+        TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
+                .withCardExpiry("99/99")
+                .withPaymentOutcome(new PaymentOutcome("failed", "P0050", new Supplemental()))
+                .build();
+
+        Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
+
+        assertThat(constraintViolations.size(), isNumber(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [card_expiry] must have valid MM/YY"));
+    }
+
+    @Test
+    public void passesValidationForValidCardExpiryAndStatusOfSuccess() {
 
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
                 .withCardExpiry("01/99")
+                .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();
 
         Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
@@ -77,14 +108,42 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void passesValidationForNullCardExpiry() {
+    public void passesValidationForValidCardExpiryAndStatusOfFailed() {
 
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
-                .withCardExpiry(null)
+                .withCardExpiry("01/99")
+                .withPaymentOutcome(new PaymentOutcome("failed", "P0050", new Supplemental()))
                 .build();
 
         Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
 
         assertThat(constraintViolations.isEmpty(), is(true));
+    }
+
+    @Test
+    public void passesValidationForNullCardExpiryAndStatusOfFailed() {
+
+        TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
+                .withCardExpiry(null)
+                .withPaymentOutcome(new PaymentOutcome("failed", "P0050", new Supplemental()))
+                .build();
+
+        Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
+
+        assertThat(constraintViolations.isEmpty(), is(true));
+    }
+
+    @Test
+    public void failsValidationForNullCardExpiryAndStatusOfSuccess() {
+
+        TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
+                .withCardExpiry(null)
+                .withPaymentOutcome(new PaymentOutcome("success"))
+                .build();
+
+        Set<ConstraintViolation<TelephoneChargeCreateRequest>> constraintViolations = validator.validate(telephoneChargeCreateRequest);
+
+        assertThat(constraintViolations.size(), isNumber(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [card_expiry] must have valid MM/YY"));
     }
 }
