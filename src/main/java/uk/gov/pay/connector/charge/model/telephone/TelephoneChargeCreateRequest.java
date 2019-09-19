@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
 public class TelephoneChargeCreateRequest {
     
     @NotNull(message = "Field [amount] cannot be null")
@@ -50,7 +51,6 @@ public class TelephoneChargeCreateRequest {
     
     private String emailAddress;
     
-    @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
 
     @NotNull(message = "Field [last_four_digits] cannot be null")

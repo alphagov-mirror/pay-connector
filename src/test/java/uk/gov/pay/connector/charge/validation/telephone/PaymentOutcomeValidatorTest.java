@@ -17,7 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.connector.util.NumberMatcher.isNumber;
 
 public class PaymentOutcomeValidatorTest {
-    
+
     private static TelephoneChargeCreateRequest.Builder telephoneRequestBuilder = new TelephoneChargeCreateRequest.Builder();
 
     private static Validator validator;
@@ -36,7 +36,7 @@ public class PaymentOutcomeValidatorTest {
                 .withCardType("visa")
                 .withLastFourDigits("1234")
                 .withFirstSixDigits("123456");
-                
+
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PaymentOutcomeValidatorTest {
                         "textual message describing error code"
                 )
         );
-        
+
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
                 .withPaymentOutcome(paymentOutcome)
                 .build();
@@ -119,7 +119,7 @@ public class PaymentOutcomeValidatorTest {
 
     @Test
     public void passesValidationForPaymentOutcomeStatusOfSuccess() {
-        
+
         TelephoneChargeCreateRequest telephoneChargeCreateRequest = telephoneRequestBuilder
                 .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();

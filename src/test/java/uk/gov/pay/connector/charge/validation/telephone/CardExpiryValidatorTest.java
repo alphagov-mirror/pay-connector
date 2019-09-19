@@ -25,7 +25,7 @@ public class CardExpiryValidatorTest {
     public static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        
+
         telephoneRequestBuilder
                 .withAmount(1200L)
                 .withDescription("Some description")
@@ -50,7 +50,7 @@ public class CardExpiryValidatorTest {
         assertThat(constraintViolations.size(), is(1));
         assertThat(constraintViolations.iterator().next().getMessage(), is("Field [card_expiry] must have valid MM/YY"));
     }
-    
+
     @Test
     public void failsValidationForInvalidMonth99() {
 
