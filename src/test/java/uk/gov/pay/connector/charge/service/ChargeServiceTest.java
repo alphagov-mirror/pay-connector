@@ -215,8 +215,8 @@ public class ChargeServiceTest {
                 SupportedLanguage.ENGLISH
         );
 
-        when(mockedChargeDao.findByProviderSessionId("1PROV")).thenReturn(Optional.of(returnedChargeEntity));
-        when(mockedChargeDao.findByProviderSessionId("new")).thenReturn(Optional.empty());
+        when(mockedChargeDao.findByGatewayTransactionId("1PROV")).thenReturn(Optional.of(returnedChargeEntity));
+        when(mockedChargeDao.findByGatewayTransactionId("new")).thenReturn(Optional.empty());
 
         // Populate ChargeEntity with ID when persisting
         doAnswer(invocation -> {
@@ -773,7 +773,7 @@ public class ChargeServiceTest {
         Optional<ChargeResponse> telephoneChargeResponse = service.findCharge(telephoneChargeCreateRequest);
 
         ArgumentCaptor<String> chargeEntityArgumentCaptor = forClass(String.class);
-        verify(mockedChargeDao).findByProviderSessionId(chargeEntityArgumentCaptor.capture());
+        verify(mockedChargeDao).findByGatewayTransactionId(chargeEntityArgumentCaptor.capture());
 
         String providerId = chargeEntityArgumentCaptor.getValue();
         assertThat(providerId, is("new"));
@@ -793,7 +793,7 @@ public class ChargeServiceTest {
         Optional<ChargeResponse> telephoneChargeResponse = service.findCharge(telephoneChargeCreateRequest);
 
         ArgumentCaptor<String> chargeEntityArgumentCaptor = forClass(String.class);
-        verify(mockedChargeDao).findByProviderSessionId(chargeEntityArgumentCaptor.capture());
+        verify(mockedChargeDao).findByGatewayTransactionId(chargeEntityArgumentCaptor.capture());
 
         String providerId = chargeEntityArgumentCaptor.getValue();
         assertThat(providerId, is("1PROV"));
