@@ -13,6 +13,10 @@ public class CardExpiryValidator implements ConstraintValidator<ValidCardExpiryD
     @Override
     public boolean isValid(TelephoneChargeCreateRequest telephoneChargeCreateRequest, ConstraintValidatorContext context) {
 
+        if (telephoneChargeCreateRequest.getPaymentOutcome() == null) {
+            return true;
+        }
+        
         final String cardExpiry = telephoneChargeCreateRequest.getCardExpiry().orElse(null);
         final String status = telephoneChargeCreateRequest.getPaymentOutcome().getStatus();
 
