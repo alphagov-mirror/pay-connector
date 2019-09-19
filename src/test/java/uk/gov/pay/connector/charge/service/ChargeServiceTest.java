@@ -547,7 +547,7 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
         assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is("01/19"));
         assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
-        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getGatewayTransactionId(), is("1PROV"));
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
@@ -597,7 +597,7 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
         assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is(nullValue()));
         assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
-        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getGatewayTransactionId(), is("1PROV"));
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
@@ -647,7 +647,7 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
         assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is(nullValue()));
         assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
-        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getGatewayTransactionId(), is("1PROV"));
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
@@ -702,7 +702,7 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
         assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is("01/19"));
         assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
-        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getGatewayTransactionId(), is("1PROV"));
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
@@ -756,7 +756,7 @@ public class ChargeServiceTest {
         assertThat(createdChargeEntity.getCardDetails().getCardHolderName(), is("Jane Doe"));
         assertThat(createdChargeEntity.getCardDetails().getExpiryDate(), is("01/19"));
         assertThat(createdChargeEntity.getCardDetails().getCardBrand(), is("visa"));
-        assertThat(createdChargeEntity.getProviderSessionId(), is("1PROV"));
+        assertThat(createdChargeEntity.getGatewayTransactionId(), is("1PROV"));
         assertThat(createdChargeEntity.getExternalMetadata().get().getMetadata(), equalTo(metadata));
         assertThat(createdChargeEntity.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
