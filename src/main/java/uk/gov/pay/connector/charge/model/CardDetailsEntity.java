@@ -158,7 +158,11 @@ public class CardDetailsEntity {
         return result;
     }
 
-    public CardTypeEntity getCardType() {
-        return cardType;
+    public Optional<CardTypeEntity> getCardType() {
+        return Optional.ofNullable(cardType);
+    }
+
+    public void setCardType(CardTypeEntity cardType) {
+        this.cardType = cardType;
     }
 }
