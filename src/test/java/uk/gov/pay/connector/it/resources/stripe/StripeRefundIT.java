@@ -64,50 +64,13 @@ public class StripeRefundIT extends ChargingITestBase {
                 .withTestAccount(defaultTestAccount)
                 .withChargeStatus(CAPTURED)
                 .insert();
-    }
 
-    @Test
-    public void stripeRefund() {
-        String platformAccountId = "stripe_platform_account_id";
-        String externalChargeId = defaultTestCharge.getExternalChargeId();
-        long amount = 10L;
-        
-        stripeMockClient.mockRefund();
-        stripeMockClient.mockTransferSuccess(null);
+        stripeMockClient.mockGetPaymentIntent(defaultTestCharge.getTransactionId());
 
-        ImmutableMap<String, Long> refundData = ImmutableMap.of("amount", amount, "refund_amount_available", defaultTestCharge.getAmount());
-        String refundPayload = new Gson().toJson(refundData);
-
-        ValidatableResponse response = given().port(testContext.getPort())
-                .body(refundPayload)
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .post("/v1/api/accounts/{accountId}/charges/{chargeId}/refunds"
-                        .replace("{accountId}", accountId)
-                        .replace("{chargeId}", externalChargeId))
-                .then()
-                .statusCode(ACCEPTED_202);
-
-        List<Map<String, Object>> refundsFoundByChargeId = databaseTestHelper.getRefundsByChargeId(defaultTestCharge.getChargeId());
-        assertThat(refundsFoundByChargeId.size(), is(1));
-        assertThat(refundsFoundByChargeId.get(0).get("status"), is("REFUNDED"));
-
-        String refundId = response.extract().path("refund_id");
-
-        verify(postRequestedFor(urlEqualTo("/v1/refunds"))
-                .withHeader("Idempotency-Key", equalTo("refund" + refundId))
-                .withRequestBody(containing("charge=" + defaultTestCharge.getTransactionId()))
-                .withRequestBody(containing("amount=" + amount)));
-
-        verify(postRequestedFor(urlEqualTo("/v1/transfers"))
-                .withHeader("Idempotency-Key", equalTo("transfer_in" + refundId))
-                .withHeader("Stripe-Account", equalTo(stripeAccountId))
-                .withRequestBody(containing("transfer_group=" + defaultTestCharge.getExternalChargeId()))
-                .withRequestBody(containing("destination=" + platformAccountId)));
     }
     
     @Test
-    public void stripeRefundOfPaymentIntent() {
+    public void shouldSuccessfullyRefund() {
         var paymentIntentCharge = DatabaseFixtures
                 .withDatabaseTestHelper(databaseTestHelper)
                 .aTestCharge()
