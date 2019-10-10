@@ -101,13 +101,10 @@ public class SmartpayPaymentProvider implements PaymentProvider {
             GatewayClient.Response response = client.postRequestFor(gatewayUrlMap.get(request.getGatewayAccount().getType()), 
                     request.getGatewayAccount(), build3dsResponseAuthOrderFor(request),
                     getGatewayAccountCredentialsAsAuthHeader(request.getGatewayAccount()));
-            GatewayResponse<BaseAuthoriseResponse> gatewayResponse = getSmartpayGatewayResponse(response, SmartpayAuthorisationResponse.class);
+            GatewayResponse<BaseAuthoriseResponse> gatewayResponse = getSmartpayGatewayResponse(response, Smartpay3dsAuthorisationResponse.class);
             
             if (!gatewayResponse.getBaseResponse().isPresent())
                 gatewayResponse.throwGatewayError();
-            
-            // TODO added temporarily for debugging as 3D secure is broken for Smartpay - @stephencdaly
-            logger.info("Smartpay 3DS response: " + response.getEntity());
             
             transactionId = Optional.ofNullable(gatewayResponse.getBaseResponse().get().getTransactionId());
             stringifiedResponse = gatewayResponse.toString();

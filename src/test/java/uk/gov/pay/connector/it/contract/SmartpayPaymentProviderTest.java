@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import io.dropwizard.setup.Environment;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -38,7 +37,6 @@ import uk.gov.pay.connector.util.TestClientFactory;
 import javax.ws.rs.client.Client;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -58,12 +56,12 @@ import static uk.gov.pay.connector.model.domain.ChargeEntityFixture.aValidCharge
 import static uk.gov.pay.connector.model.domain.RefundEntityFixture.userExternalId;
 import static uk.gov.pay.connector.util.SystemUtils.envOrThrow;
 
-@Ignore("Ignoring as this test is failing in Jenkins because it's failing to locate the certificates - PP-1707")
 @RunWith(MockitoJUnitRunner.class)
 public class SmartpayPaymentProviderTest {
     private String url = "https://pal-test.barclaycardsmartpay.com/pal/servlet/soap/Payment";
     private String username;
     private String password;
+    private String testUrl;
     private ChargeEntity chargeEntity;
     private GatewayAccountEntity gatewayAccountEntity;
     private MetricRegistry mockMetricRegistry;
@@ -249,7 +247,7 @@ public class SmartpayPaymentProviderTest {
         when(gatewayClientFactory.createGatewayClient(any(PaymentGatewayName.class), any(MetricRegistry.class))).thenReturn(gatewayClient);
 
         GatewayConfig gatewayConfig = mock(GatewayConfig.class);
-        when(gatewayConfig.getUrls()).thenReturn(Collections.EMPTY_MAP);
+        when(gatewayConfig.getUrls()).thenReturn(Map.of(TEST.toString(), "https://pal-test.barclaycardsmartpay.com/pal/servlet/soap/Payment"));
 
         ConnectorConfiguration configuration = mock(ConnectorConfiguration.class);
         when(configuration.getGatewayConfigFor(PaymentGatewayName.SMARTPAY)).thenReturn(gatewayConfig);
