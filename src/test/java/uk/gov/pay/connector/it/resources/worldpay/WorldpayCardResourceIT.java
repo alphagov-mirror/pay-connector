@@ -274,17 +274,17 @@ public class WorldpayCardResourceIT extends ChargingITestBase {
     }
 
     @Test
-    public void shouldReturnStatus500_WhenAuthorisationCallThrowsException() {
+    public void shouldReturnStatus400_WhenAuthorisationCallThrowsException() {
         String chargeId = createNewCharge(AUTHORISATION_3DS_REQUIRED);
 
-        String expectedErrorMessage = "Failed";
+        String expectedErrorMessage = "This transaction was declined.";
         worldpayMockClient.mockServerFault();
 
         givenSetup()
                 .body(buildJsonWithPaResponse())
                 .post(authorise3dsChargeUrlFor(chargeId))
                 .then()
-                .statusCode(INTERNAL_SERVER_ERROR.getStatusCode())
+                .statusCode(BAD_REQUEST.getStatusCode())
                 .contentType(JSON)
                 .body("message", contains(expectedErrorMessage))
                 .body("error_identifier", is(ErrorIdentifier.GENERIC.toString()));
@@ -293,17 +293,17 @@ public class WorldpayCardResourceIT extends ChargingITestBase {
     }
 
     @Test
-    public void shouldReturnStatus500_AWorldpayPaResParseError() {
+    public void shouldReturnStatus400_AWorldpayPaResParseError() {
         String chargeId = createNewCharge(AUTHORISATION_3DS_REQUIRED);
 
-        String expectedErrorMessage = "Failed";
+        String expectedErrorMessage = "This transaction was declined.";
         worldpayMockClient.mockAuthorisationPaResParseError();
 
         givenSetup()
                 .body(buildJsonWithPaResponse())
                 .post(authorise3dsChargeUrlFor(chargeId))
                 .then()
-                .statusCode(INTERNAL_SERVER_ERROR.getStatusCode())
+                .statusCode(BAD_REQUEST.getStatusCode())
                 .contentType(JSON)
                 .body("message", contains(expectedErrorMessage))
                 .body("error_identifier", is(ErrorIdentifier.GENERIC.toString()));

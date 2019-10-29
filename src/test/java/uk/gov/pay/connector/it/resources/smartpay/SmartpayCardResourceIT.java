@@ -124,7 +124,7 @@ public class SmartpayCardResourceIT extends ChargingITestBase {
     }
 
     @Test
-    public void shouldReturnStatus500_WhenAuthorisationCallThrowsException() throws JsonProcessingException {
+    public void shouldReturnStatus400_WhenAuthorisationCallThrowsException() throws JsonProcessingException {
         databaseTestHelper.enable3dsForGatewayAccount(Long.parseLong(accountId));
         String chargeId = createNewChargeWithNoTransactionId(AUTHORISATION_3DS_REQUIRED);
         smartpayMockClient.mockServerFault();
@@ -133,7 +133,7 @@ public class SmartpayCardResourceIT extends ChargingITestBase {
                 .body(new ObjectMapper().writeValueAsString(get3dsPayload()))
                 .post(authorise3dsChargeUrlFor(chargeId))
                 .then()
-                .statusCode(500);
+                .statusCode(400);
 
         assertFrontendChargeStatusIs(chargeId, AUTHORISATION_ERROR.getValue());
     }
