@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.connector.gateway.PaymentGatewayName;
+import uk.gov.pay.connector.gateway.epdq.EpdqNotification;
 import uk.gov.pay.connector.gatewayaccount.model.GatewayAccountEntity;
 import uk.gov.pay.connector.refund.model.domain.RefundEntity;
 import uk.gov.pay.connector.refund.model.domain.RefundStatus;
@@ -27,17 +28,17 @@ public class RefundNotificationProcessor {
         this.userNotificationService = userNotificationService;
     }
 
-    public void invoke(PaymentGatewayName gatewayName, RefundStatus newStatus, String reference, String transactionId) {
-        if (isBlank(reference)) {
-            logger.error("{} refund notification could not be used to update charge (missing reference)",
+    public void invoke(PaymentGatewayName gatewayName, RefundStatus newStatus, EpdqNotification notification) {
+        if (isBlank(notification.getReference())) {
+            logger.warn("{} refund notification could not be used to update charge (missing reference)",
                     gatewayName);
             return;
         }
 
-        Optional<RefundEntity> optionalRefundEntity = refundService.findByProviderAndReference(gatewayName.getName(), reference);
+        Optional<RefundEntity> optionalRefundEntity = refundService.findByProviderAndReference(gatewayName.getName(), notification.getReference());
         if (!optionalRefundEntity.isPresent()) {
-            logger.error("{} notification '{}' could not be used to update refund (associated refund entity not found)",
-                    gatewayName, reference);
+            logger.warn("{} notification '{}' could not be used to update refund (associated refund entity not found for reference)",
+                    gatewayName, notification);
             return;
         }
 
@@ -54,8 +55,8 @@ public class RefundNotificationProcessor {
         logger.info("Notification received for refund. Updating refund - charge_external_id={}, refund_reference={}, transaction_id={}, status={}, "
                         + "status_to={}, account_id={}, provider={}, provider_type={}",
                 refundEntity.getChargeEntity().getExternalId(),
-                reference,
-                transactionId,
+                notification.getReference(),
+                notification.getTransactionId(),
                 oldStatus,
                 newStatus,
                 gatewayAccount.getId(),

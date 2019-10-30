@@ -84,8 +84,6 @@ public class EpdqNotificationService {
             return;
         }
 
-        logger.info("Evaluating {} notification {}", PAYMENT_GATEWAY_NAME, notification);
-
         final Optional<ChargeStatus> newChargeStatus = newChargeStateForChargeNotification(notification.getStatus(), ChargeStatus.fromString(charge.getStatus()));
 
         if (newChargeStatus.isPresent()) {
@@ -93,8 +91,7 @@ public class EpdqNotificationService {
         } else {
             final Optional<RefundStatus> newRefundStatus = newRefundStateForRefundNotification(notification.getStatus());
             newRefundStatus.ifPresent(refundStatus -> refundNotificationProcessor.invoke(
-                    PaymentGatewayName.EPDQ, refundStatus, notification.getReference(), notification.getTransactionId()
-            ));
+                    PaymentGatewayName.EPDQ, refundStatus, notification));
         }
     }
 
