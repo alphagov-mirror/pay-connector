@@ -17,9 +17,8 @@ import javax.inject.Inject;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static java.lang.String.format;
 import static java.time.ZonedDateTime.now;
-import static net.logstash.logback.argument.StructuredArguments.kv;
-import static uk.gov.pay.logging.LoggingKeys.PROVIDER;
 
 public class StateTransitionService {
 
@@ -54,11 +53,10 @@ public class StateTransitionService {
                 .ifPresent(eventClass -> {
                     PaymentStateTransition transition = new PaymentStateTransition(chargeEventEntity.getId(), eventClass);
                     stateTransitionQueue.offer(transition);
-                    logger.info(String.format("Offered payment state transition to emitter queue [from=%s] [to=%s] [chargeEventId=%s] [chargeId=%s]",
-                            fromChargeState, targetChargeState, chargeEventEntity.getId(), externalId),
-                            kv(PROVIDER, chargeEventEntity.getChargeEntity().getPaymentGatewayName().getName()),
-                            kv("from_state", fromChargeState),
-                            kv("to_state", targetChargeState));
+                    var logMessage = format("Offered payment state transition to emitter queue [from=%s] [to=%s] [chargeEventId=%s] [chargeId=%s]",
+                            fromChargeState, targetChargeState, chargeEventEntity.getId(), externalId);
+
+                    logger.info(logMessage, chargeEventEntity.getChargeEntity().getStructuredKeys());
 
                     eventService.recordOfferedEvent(ResourceType.PAYMENT,
                             externalId,
