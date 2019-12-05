@@ -107,11 +107,6 @@ public class ChargingITestBase {
         connectorRestApiClient = new RestAssuredClient(testContext.getPort(), accountId);
     }
 
-    @After
-    public void tearDown() {
-        databaseTestHelper.truncateAllData();
-    }
-
     public Map<String, String> getCredentials() {
         return credentials;
     }

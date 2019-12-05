@@ -47,11 +47,6 @@ public class GatewayAccountDaoIT extends DaoITestBase {
         gatewayAccountId = nextLong();
     }
 
-    @After
-    public void truncate() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void persist_shouldCreateAnAccount() {
         final CardTypeEntity masterCardCredit = databaseTestHelper.getMastercardCreditCard();

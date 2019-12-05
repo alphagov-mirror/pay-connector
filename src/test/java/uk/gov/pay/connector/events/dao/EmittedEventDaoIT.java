@@ -26,7 +26,6 @@ public class EmittedEventDaoIT extends DaoITestBase {
     @Before
     public void setUp() {
         emittedEventDao = env.getInstance(EmittedEventDao.class);
-        databaseTestHelper.truncateAllData();
     }
 
     @Test

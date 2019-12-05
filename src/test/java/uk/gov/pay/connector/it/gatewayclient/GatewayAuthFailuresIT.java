@@ -91,11 +91,6 @@ public class GatewayAuthFailuresIT {
         root.addAppender(mockAppender);
     }
 
-    @After
-    public void teardown() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void shouldFailAuthWhenUnexpectedHttpStatusCodeFromGateway() {
         gatewayStub.respondWithUnexpectedResponseCodeWhenCardAuth();

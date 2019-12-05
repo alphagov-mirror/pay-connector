@@ -699,7 +699,7 @@ public class DatabaseTestHelper {
         jdbi.withHandle(h -> h.createStatement("TRUNCATE TABLE emitted_events").execute());
     }
     
-    public void truncateAllData() {
+    public synchronized void truncateAllData() {
         jdbi.withHandle(h -> h.createStatement("TRUNCATE TABLE gateway_accounts CASCADE").execute());
         jdbi.withHandle(h -> h.createStatement("TRUNCATE TABLE emitted_events CASCADE").execute());
         jdbi.withHandle(h -> h.createStatement("TRUNCATE TABLE tokens").execute());

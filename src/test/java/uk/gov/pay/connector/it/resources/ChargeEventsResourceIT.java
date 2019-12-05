@@ -1,7 +1,6 @@
 package uk.gov.pay.connector.it.resources;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,11 +56,6 @@ public class ChargeEventsResourceIT {
                 .withServiceName("a cool service")
                 .build();
         databaseTestHelper.addGatewayAccount(gatewayAccountParams);
-    }
-
-    @After
-    public void teardown() {
-        databaseTestHelper.truncateAllData();
     }
 
     @Test

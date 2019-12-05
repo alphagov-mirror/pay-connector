@@ -85,11 +85,6 @@ public class ChargeDaoIT extends DaoITestBase {
         insertTestAccount();
     }
 
-    @After
-    public void clear() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void searchChargesByGatewayAccountIdOnly() {
         // given

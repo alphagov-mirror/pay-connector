@@ -51,11 +51,6 @@ public class SecurityTokensResourceIT {
                 .insert();
     }
 
-    @After
-    public void tearDown() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void shouldGetChargeForToken() {
         TestToken token = DatabaseFixtures

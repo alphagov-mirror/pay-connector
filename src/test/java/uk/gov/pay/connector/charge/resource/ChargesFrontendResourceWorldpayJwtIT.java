@@ -45,11 +45,6 @@ public class ChargesFrontendResourceWorldpayJwtIT {
         connectorRestApi = new RestAssuredClient(testContext.getPort());
     }
 
-    @After
-    public void tearDown() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void shouldGetCorrectDdcToken() {
         var chargeExternalId = "myFirstChargeId";

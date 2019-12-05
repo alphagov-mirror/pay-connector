@@ -27,11 +27,6 @@ public class StripeAccountSetupDaoIT extends DaoITestBase {
         stripeAccountSetupDao = env.getInstance(StripeAccountSetupDao.class);
     }
 
-    @After
-    public void truncate() {
-        databaseTestHelper.truncateAllData();
-    }
-
     @Test
     public void shouldFindTasksByGatewayAccountId() {
         long gatewayAccountId = 42;

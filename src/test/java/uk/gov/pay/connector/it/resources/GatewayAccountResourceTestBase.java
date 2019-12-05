@@ -39,11 +39,6 @@ public class GatewayAccountResourceTestBase {
         databaseFixtures = DatabaseFixtures.withDatabaseTestHelper(databaseTestHelper);
     }
 
-    @After
-    public void tearDown() {
-        databaseTestHelper.truncateAllData();
-    }
-
     protected RequestSpecification givenSetup() {
         return given().port(testContext.getPort())
                 .contentType(JSON);
