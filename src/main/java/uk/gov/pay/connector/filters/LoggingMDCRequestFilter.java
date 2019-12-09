@@ -48,6 +48,9 @@ public class LoggingMDCRequestFilter implements ContainerRequestFilter {
 
         getPathParameterFromRequest("chargeTokenId", requestContext)
                 .ifPresent(token -> MDC.put(SECURE_TOKEN, token));
+
+        getPathParameterFromRequest("gatewayTransactionId", requestContext)
+                .ifPresent(gatewayTxId -> MDC.put("gateway_transaction_id", gatewayTxId));
     }
 
     private Optional<ChargeEntity> getChargeFromRequest(ContainerRequestContext requestContext) {
