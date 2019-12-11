@@ -58,6 +58,9 @@ public class GatewayAccountRequestValidatorTest {
             "replace, integration_version_3ds, a-string, Value [a-string] is not valid for path [integration_version_3ds]",
             "replace, integration_version_3ds, 0, Value [0] is not valid for path [integration_version_3ds]",
             "replace, integration_version_3ds, 3, Value [3] is not valid for path [integration_version_3ds]",
+            "bad, block_prepaid_cards, true, Operation [bad] is not valid for path [block_prepaid_cards]",
+            "replace, block_prepaid_cards, null, Field [value] is required",
+            "replace, block_prepaid_cards, unfalse, Value [unfalse] must be of type boolean for path [block_prepaid_cards]",
     })
     public void shouldThrowWhenRequestsAreInvalid(String op, String path, @Nullable String value, String expectedErrorMessage) {
         Map<String, String> patch = new HashMap<String, String>() {{
