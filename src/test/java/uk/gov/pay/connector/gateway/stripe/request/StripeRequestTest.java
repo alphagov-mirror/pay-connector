@@ -40,7 +40,7 @@ public class StripeRequestTest {
         when(stripeGatewayConfig.getAuthTokens()).thenReturn(stripeAuthTokens);
         when(stripeAuthTokens.getLive()).thenReturn("live");
         when(stripeAuthTokens.getTest()).thenReturn("test");
-        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund);
+        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund, gatewayAccount);
 
         stripeRefundRequest = StripeRefundRequest.of(refundGatewayRequest, "charge_id", stripeGatewayConfig);
     }

@@ -59,7 +59,7 @@ public class StripeTransferInRequestTest {
         when(stripeGatewayConfig.getAuthTokens()).thenReturn(stripeAuthTokens);
         when(stripeGatewayConfig.getPlatformAccountId()).thenReturn(stripePlatformAccountId);
 
-        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund);
+        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund, gatewayAccount);
 
         stripeTransferInRequest = StripeTransferInRequest.of(refundGatewayRequest, stripeChargeId, stripeGatewayConfig);
     }

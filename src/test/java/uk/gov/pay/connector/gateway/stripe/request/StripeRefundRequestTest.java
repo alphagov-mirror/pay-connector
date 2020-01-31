@@ -53,7 +53,7 @@ public class StripeRefundRequestTest {
         when(stripeGatewayConfig.getUrl()).thenReturn(stripeBaseUrl);
         when(stripeGatewayConfig.getAuthTokens()).thenReturn(stripeAuthTokens);
 
-        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund);
+        final RefundGatewayRequest refundGatewayRequest = RefundGatewayRequest.valueOf(refund, gatewayAccount);
 
         stripeRefundRequest = StripeRefundRequest.of(refundGatewayRequest, stripeChargeId, stripeGatewayConfig);
     }
