@@ -25,6 +25,7 @@ import uk.gov.pay.connector.gateway.epdq.model.response.EpdqQueryResponse;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinition;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForCancelOrder;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForCaptureOrder;
+import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNewOrder;
 import uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForQueryOrder;
@@ -48,6 +49,7 @@ import uk.gov.pay.connector.wallets.WalletAuthorisationGatewayRequest;
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import java.net.URI;
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -312,10 +314,18 @@ public class EpdqPaymentProvider implements PaymentProvider {
         templateData.setDescription(request.getDescription());
         templateData.setAmount(request.getAmount());
         templateData.setAuthCardDetails(request.getAuthCardDetails());
+
+        EpdqPayloadDefinition epdqPayloadDefinition;
         
-        var epdqPayloadDefinition = request.getGatewayAccount().isRequires3ds() ?
-                        new EpdqPayloadDefinitionForNew3dsOrder(frontendUrl) :
-                        epdqPayloadDefinitionForNewOrder;
+        if (request.getGatewayAccount().isRequires3ds()) {
+            if (request.getGatewayAccount().getIntegrationVersion3ds() == 2) {
+                epdqPayloadDefinition = new EpdqPayloadDefinitionForNew3ds2Order(frontendUrl, request.getCharge().getLanguage(), Clock.systemUTC());
+            } else {
+                epdqPayloadDefinition = new EpdqPayloadDefinitionForNew3dsOrder(frontendUrl);
+            }
+        } else {
+            epdqPayloadDefinition = epdqPayloadDefinitionForNewOrder;
+        }
         
         return epdqPayloadDefinition.createGatewayOrder(templateData);
     }
