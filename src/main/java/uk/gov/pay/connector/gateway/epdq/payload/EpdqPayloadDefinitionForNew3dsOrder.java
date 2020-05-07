@@ -3,11 +3,10 @@ package uk.gov.pay.connector.gateway.epdq.payload;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import uk.gov.pay.connector.common.model.domain.Address;
+import uk.gov.pay.connector.gateway.epdq.EpdqTemplateData;
 import uk.gov.pay.connector.gateway.model.OrderRequestType;
 
 import java.util.List;
-
-import uk.gov.pay.connector.gateway.epdq.EpdqTemplateData;
 
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqParameterBuilder.newParameterBuilder;
 
@@ -47,11 +46,16 @@ public class EpdqPayloadDefinitionForNew3dsOrder extends EpdqPayloadDefinitionFo
                 .add(EXCEPTIONURL_KEY, frontend3dsIncomingUrl + "?status=error")
                 .add(EXPIRY_DATE_KEY, templateData.getAuthCardDetails().getEndDate())
                 .add(FLAG3D_KEY, "Y")
-                .add(HTTPACCEPT_URL, templateData.getAuthCardDetails().getAcceptHeader())
                 .add(HTTPUSER_AGENT_URL, templateData.getAuthCardDetails().getUserAgentHeader())
                 .add(LANGUAGE_URL, "en_GB")
                 .add(OPERATION_KEY, templateData.getOperationType())
                 .add(ORDER_ID_KEY, templateData.getOrderId());
+        
+        if(StringUtils.isBlank(templateData.getAuthCardDetails().getAcceptHeader())) {
+            epdqParameterBuilder.add(HTTPACCEPT_URL, "*/*");
+        } else {
+            epdqParameterBuilder.add(HTTPACCEPT_URL, templateData.getAuthCardDetails().getAcceptHeader());
+        }
 
         if (templateData.getAuthCardDetails().getAddress().isPresent()) {
             Address address = templateData.getAuthCardDetails().getAddress().get();
