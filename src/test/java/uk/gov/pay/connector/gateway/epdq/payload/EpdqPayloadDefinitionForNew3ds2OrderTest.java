@@ -27,16 +27,18 @@ import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionFor
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.BROWSER_SCREEN_HEIGHT;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.BROWSER_SCREEN_WIDTH;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.BROWSER_TIMEZONE_OFFSET_MINS;
+import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.BROWSER_USER_AGENT;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.DEFAULT_BROWSER_COLOR_DEPTH;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.DEFAULT_BROWSER_SCREEN_HEIGHT;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.DEFAULT_BROWSER_SCREEN_WIDTH;
+import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2Order.DEFAULT_BROWSER_USER_AGENT;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3ds2OrderTest.ParameterBuilder.aParameterBuilder;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.ACCEPTURL_KEY;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.DECLINEURL_KEY;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.EXCEPTIONURL_KEY;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.FLAG3D_KEY;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.HTTPACCEPT_URL;
-import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.HTTPUSER_AGENT_URL;
+import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.HTTPUSER_AGENT;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.LANGUAGE_URL;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNew3dsOrder.WIN3DS_URL;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqPayloadDefinitionForNewOrder.AMOUNT_KEY;
@@ -67,7 +69,7 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
     private static final String USER_ID = "User";
     private static final String FRONTEND_URL = "http://www.frontend.example.com";
     private static final String ACCEPT_HEADER = "Test Accept Header";
-    private static final String USER_AGENT_HEADER = "Test User Agent Header";
+    private static final String USER_AGENT_HEADER = "Mozilla/5.0";
     private static final Clock BRITISH_SUMMER_TIME_OFFSET_CLOCK = Clock.fixed(Instant.parse("2020-05-06T10:10:10.100Z"), ZoneOffset.UTC);
     private static final Clock GREENWICH_MERIDIAN_TIME_OFFSET_CLOCK = Clock.fixed(Instant.parse("2020-01-01T10:10:10.100Z"), ZoneOffset.UTC);
     
@@ -203,6 +205,21 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
         List<NameValuePair> result = epdqPayloadDefinitionFor3ds2NewOrder.extract(epdqTemplateData);
         assertThat(result, is(aParameterBuilder().withBrowserTimezoneOffsetMins("0").build()));
     }
+
+    @Test
+    public void should_include_provided_browserAgentHeader() {
+        authCardDetails.setUserAgentHeader("Opera/9.8");
+        List<NameValuePair> result = epdqPayloadDefinitionFor3ds2NewOrder.extract(epdqTemplateData);
+        assertThat(result, is(aParameterBuilder().withBrowserUserAgent("Opera/9.8").build()));
+    }
+
+    @Test
+    @Parameters({"null", ""})
+    public void browserAgentHeader_should_include_default_if_browser_agent_header_not_provided(@Nullable String browserAgentHeader) {
+        authCardDetails.setUserAgentHeader(browserAgentHeader);
+        List<NameValuePair> result = epdqPayloadDefinitionFor3ds2NewOrder.extract(epdqTemplateData);
+        assertThat(result, is(aParameterBuilder().withBrowserUserAgent("Mozilla/5.0").build()));
+    }
     
     static class ParameterBuilder {
         private String browserLanguage = "en-GB";
@@ -210,6 +227,7 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
         private String browserScreenWidth = DEFAULT_BROWSER_SCREEN_WIDTH;
         private String browserColorDepth = DEFAULT_BROWSER_COLOR_DEPTH;
         private String browserTimezoneOffsetMins = "-60";
+        private String browserUserAgent = DEFAULT_BROWSER_USER_AGENT;
         
         public static ParameterBuilder aParameterBuilder() {
             return new ParameterBuilder();
@@ -239,6 +257,11 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
             this.browserTimezoneOffsetMins = browserTimezoneOffsetMins;
             return this;
         }
+
+        public ParameterBuilder withBrowserUserAgent(String browserUserAgent) {
+            this.browserUserAgent = browserUserAgent;
+            return this;
+        }
         
         public List<NameValuePair> build() {
             String expectedFrontend3dsIncomingUrl = "http://www.frontend.example.com/card_details/OrderId/3ds_required_in/epdq";
@@ -254,7 +277,7 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
                     .add(EXCEPTIONURL_KEY, expectedFrontend3dsIncomingUrl + "?status=error")
                     .add(FLAG3D_KEY, "Y")
                     .add(HTTPACCEPT_URL, ACCEPT_HEADER)
-                    .add(HTTPUSER_AGENT_URL, USER_AGENT_HEADER)
+                    .add(HTTPUSER_AGENT, browserUserAgent)
                     .add(LANGUAGE_URL, "en_GB")
                     .add(OPERATION_KEY, OPERATION_TYPE)
                     .add(ORDER_ID_KEY, ORDER_ID)
@@ -266,7 +289,8 @@ public class EpdqPayloadDefinitionForNew3ds2OrderTest {
                     .add(BROWSER_LANGUAGE, browserLanguage)
                     .add(BROWSER_SCREEN_HEIGHT, browserScreenHeight)
                     .add(BROWSER_SCREEN_WIDTH, browserScreenWidth)
-                    .add(BROWSER_TIMEZONE_OFFSET_MINS, browserTimezoneOffsetMins);
+                    .add(BROWSER_TIMEZONE_OFFSET_MINS, browserTimezoneOffsetMins)
+                    .add(BROWSER_USER_AGENT, browserUserAgent);
             return epdqParameterBuilder.build();
         }
     }

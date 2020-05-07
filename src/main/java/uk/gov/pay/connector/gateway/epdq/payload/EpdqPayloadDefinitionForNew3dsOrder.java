@@ -19,7 +19,7 @@ public class EpdqPayloadDefinitionForNew3dsOrder extends EpdqPayloadDefinitionFo
     public static final String EXCEPTIONURL_KEY = "EXCEPTIONURL";
     public static final String FLAG3D_KEY = "FLAG3D";
     public static final String HTTPACCEPT_URL = "HTTP_ACCEPT";
-    public static final String HTTPUSER_AGENT_URL = "HTTP_USER_AGENT";
+    public static final String HTTPUSER_AGENT = "HTTP_USER_AGENT";
     public static final String LANGUAGE_URL = "LANGUAGE";
     public static final String PARAMPLUS_URL = "PARAMPLUS";
     public static final String WIN3DS_URL = "WIN3DS";
@@ -48,10 +48,15 @@ public class EpdqPayloadDefinitionForNew3dsOrder extends EpdqPayloadDefinitionFo
                 .add(EXPIRY_DATE_KEY, templateData.getAuthCardDetails().getEndDate())
                 .add(FLAG3D_KEY, "Y")
                 .add(HTTPACCEPT_URL, templateData.getAuthCardDetails().getAcceptHeader())
-                .add(HTTPUSER_AGENT_URL, templateData.getAuthCardDetails().getUserAgentHeader())
                 .add(LANGUAGE_URL, "en_GB")
                 .add(OPERATION_KEY, templateData.getOperationType())
                 .add(ORDER_ID_KEY, templateData.getOrderId());
+        
+        if (StringUtils.isBlank(templateData.getAuthCardDetails().getUserAgentHeader())) {
+            epdqParameterBuilder.add(HTTPUSER_AGENT, "Mozilla/5.0");
+        } else {
+            epdqParameterBuilder.add(HTTPUSER_AGENT, templateData.getAuthCardDetails().getUserAgentHeader());
+        }
 
         if (templateData.getAuthCardDetails().getAddress().isPresent()) {
             Address address = templateData.getAuthCardDetails().getAddress().get();

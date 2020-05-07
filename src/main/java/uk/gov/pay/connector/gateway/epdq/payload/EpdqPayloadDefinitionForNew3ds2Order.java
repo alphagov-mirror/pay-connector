@@ -9,9 +9,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static java.util.function.Predicate.not;
 import static uk.gov.pay.connector.gateway.epdq.payload.EpdqParameterBuilder.newParameterBuilder;
 
 public class EpdqPayloadDefinitionForNew3ds2Order extends EpdqPayloadDefinitionForNew3dsOrder {
@@ -21,9 +23,11 @@ public class EpdqPayloadDefinitionForNew3ds2Order extends EpdqPayloadDefinitionF
     public final static String BROWSER_SCREEN_HEIGHT = "browserScreenHeight";
     public final static String BROWSER_SCREEN_WIDTH = "browserScreenWidth";
     public final static String BROWSER_TIMEZONE_OFFSET_MINS = "browserTimezoneOffsetMins";
+    public final static String BROWSER_USER_AGENT = "browserUserAgent";
     public final static String DEFAULT_BROWSER_COLOR_DEPTH = "24";
     public final static String DEFAULT_BROWSER_SCREEN_HEIGHT = "480";
     public final static String DEFAULT_BROWSER_SCREEN_WIDTH = "320";
+    public final static String DEFAULT_BROWSER_USER_AGENT = "Mozilla/5.0";
     
     private final static Pattern NUMBER_FROM_0_TO_999999 = Pattern.compile("0|[1-9][0-9]{0,5}");
     private final static Pattern NUMBER_FROM_MINUS_999_TO_999 = Pattern.compile("-[1-9][0-9]{0,2}|0|[1-9][0-9]{0,2}");
@@ -46,7 +50,8 @@ public class EpdqPayloadDefinitionForNew3ds2Order extends EpdqPayloadDefinitionF
                 .add(BROWSER_LANGUAGE, getBrowserLanguage(templateData))
                 .add(BROWSER_SCREEN_HEIGHT, getBrowserScreenHeight(templateData))
                 .add(BROWSER_SCREEN_WIDTH, getBrowserScreenWidth(templateData))
-                .add(BROWSER_TIMEZONE_OFFSET_MINS, getBrowserTimezoneOffsetMins(templateData));
+                .add(BROWSER_TIMEZONE_OFFSET_MINS, getBrowserTimezoneOffsetMins(templateData))
+                .add(BROWSER_USER_AGENT, getBrowserUserAgent(templateData));
 
         return parameterBuilder.build();
     }
@@ -104,5 +109,11 @@ public class EpdqPayloadDefinitionForNew3ds2Order extends EpdqPayloadDefinitionF
         int currentUkOffsetMinsInJavaFormatWithAheadOfUtcPositive = currentUkOffset.getTotalSeconds() / 60;
         int currentUkOffsetMinsInJavaScriptFormatWithAheadOfUtcNegative = -currentUkOffsetMinsInJavaFormatWithAheadOfUtcPositive;
         return String.valueOf(currentUkOffsetMinsInJavaScriptFormatWithAheadOfUtcNegative);
+    }
+
+    private String getBrowserUserAgent(EpdqTemplateData templateData) {
+        return Optional.ofNullable(templateData.getAuthCardDetails().getUserAgentHeader())
+                .filter(not(String::isEmpty))
+                .orElse(DEFAULT_BROWSER_USER_AGENT);
     }
 }
