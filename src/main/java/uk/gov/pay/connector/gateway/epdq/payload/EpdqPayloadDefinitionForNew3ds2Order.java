@@ -21,7 +21,7 @@ public class EpdqPayloadDefinitionForNew3ds2Order extends EpdqPayloadDefinitionF
     public final static String BROWSER_LANGUAGE = "browserLanguage";
     public final static String BROWSER_SCREEN_HEIGHT = "browserScreenHeight";
     public final static String BROWSER_SCREEN_WIDTH = "browserScreenWidth";
-    public final static String BROWSER_TIMEZONE_OFFSET_MINS = "browserTimezoneOffsetMins";
+    public final static String BROWSER_TIMEZONE_OFFSET_MINS = "browserTimezone";
     public final static String BROWSER_ACCEPT_HEADER = "browserAcceptHeader";
     public final static String BROWSER_USER_AGENT = "browserUserAgent";
     public final static String BROWSER_JAVA_ENABLED = "browserJavaEnabled";
