@@ -161,6 +161,9 @@ public class ChargeEntity extends AbstractVersionedEntity implements Nettable {
 
     @Column(name = "moto")
     private boolean moto;
+    
+    @Column(name = "address_state_province")
+    private String addressStateProvince;
 
     public ChargeEntity() {
         //for jpa
@@ -430,6 +433,14 @@ public class ChargeEntity extends AbstractVersionedEntity implements Nettable {
 
     public void setSource(Source source) {
         this.source = source;
+    }
+
+    public String getAddressStateProvince() {
+        return addressStateProvince;
+    }
+
+    public void setAddressStateProvince(String addressStateProvince) {
+        this.addressStateProvince = addressStateProvince;
     }
 
     public static final class WebChargeEntityBuilder {
