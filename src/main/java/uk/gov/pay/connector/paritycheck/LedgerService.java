@@ -51,18 +51,37 @@ public class LedgerService {
         return getTransactionFromLedger(uri);
     }
 
+    public Optional<RefundTransactionsForPayment> getRefundsForPayment(Long gatewayAccountId, String paymentExternalId) {
+        var uri = UriBuilder
+                .fromPath(ledgerUrl)
+                .path(format("/v1/transaction/%s/transaction", paymentExternalId))
+                .queryParam("gateway_account_id", gatewayAccountId);
+
+        Response response = getResponse(uri);
+
+        if (response.getStatus() == SC_OK) {
+            return Optional.of(response.readEntity(RefundTransactionsForPayment.class));
+        }
+
+        return Optional.empty();
+    }
+
     private Optional<LedgerTransaction> getTransactionFromLedger(UriBuilder uri) {
-        Response response = client
-                .target(uri)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+        Response response = getResponse(uri);
 
         if (response.getStatus() == SC_OK) {
             return Optional.of(response.readEntity(LedgerTransaction.class));
         }
 
         return Optional.empty();
+    }
+
+    private Response getResponse(UriBuilder uri) {
+        return client
+                .target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
     }
 
 }
