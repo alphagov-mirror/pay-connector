@@ -1,6 +1,8 @@
-package uk.gov.pay.connector.paritycheck;
+package uk.gov.pay.connector.client.ledger.service;
 
 import uk.gov.pay.connector.app.ConnectorConfiguration;
+import uk.gov.pay.connector.client.ledger.model.LedgerTransaction;
+import uk.gov.pay.connector.client.ledger.model.RefundTransactionsForPayment;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
