@@ -103,6 +103,8 @@ public class ConnectorApp extends Application<ConnectorConfiguration> {
         bootstrap.addCommand(new RenderStateTransitionGraphCommand());
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(GovUkPayDropwizardRequestJsonLogLayoutFactory.class);
+
+        java.security.Security.setProperty("networkaddress.cache.ttl" , "15");
     }
 
     @Override
