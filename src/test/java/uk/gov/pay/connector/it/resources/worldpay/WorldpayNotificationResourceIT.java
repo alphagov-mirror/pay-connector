@@ -41,8 +41,7 @@ import static uk.gov.pay.connector.refund.model.domain.RefundStatus.REFUND_SUBMI
 import static uk.gov.pay.connector.util.TestTemplateResourceLoader.WORLDPAY_NOTIFICATION;
 
 @RunWith(DropwizardJUnitRunner.class)
-@DropwizardConfig(app = WorldpayNotificationResourceIT.ConnectorAppWithCustomInjector.class, config = "config/test-it-config.yaml",
-        configOverrides = {@ConfigOverride(key = "worldpay.notificationDomain", value = ".worldpay.com")})
+@DropwizardConfig(app = WorldpayNotificationResourceIT.ConnectorAppWithCustomInjector.class, config = "config/worldpay-domain-it-config.yaml")
 public class WorldpayNotificationResourceIT extends ChargingITestBase {
 
     private static final String RESPONSE_EXPECTED_BY_WORLDPAY = "[OK]";
