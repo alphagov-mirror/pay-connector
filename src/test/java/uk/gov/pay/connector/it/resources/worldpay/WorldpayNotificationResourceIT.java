@@ -10,6 +10,7 @@ import uk.gov.pay.connector.app.ConnectorConfiguration;
 import uk.gov.pay.connector.app.ConnectorModule;
 import uk.gov.pay.connector.it.base.ChargingITestBase;
 import uk.gov.pay.connector.it.dao.DatabaseFixtures;
+import uk.gov.pay.connector.junit.ConfigOverride;
 import uk.gov.pay.connector.junit.DropwizardConfig;
 import uk.gov.pay.connector.junit.DropwizardJUnitRunner;
 import uk.gov.pay.connector.util.DnsPointerResourceRecord;
@@ -38,7 +39,11 @@ import static uk.gov.pay.connector.refund.model.domain.RefundStatus.REFUND_SUBMI
 import static uk.gov.pay.connector.util.TestTemplateResourceLoader.WORLDPAY_NOTIFICATION;
 
 @RunWith(DropwizardJUnitRunner.class)
-@DropwizardConfig(app = WorldpayNotificationResourceIT.ConnectorAppWithCustomInjector.class, config = "config/worldpay-domain-it-config.yaml")
+@DropwizardConfig(
+        app = WorldpayNotificationResourceIT.ConnectorAppWithCustomInjector.class, 
+        config = "config/test-it-config.yaml",
+        configOverrides = {@ConfigOverride(key = "worldpay.notificationDomain", value = ".worldpay.com")}
+)
 public class WorldpayNotificationResourceIT extends ChargingITestBase {
 
     private static final String RESPONSE_EXPECTED_BY_WORLDPAY = "[OK]";
@@ -170,7 +175,7 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
     public void shouldReturnForbiddenIfRequestComesFromUnexpectedIp() {
         given().port(testContext.getPort())
                 .body(notificationPayloadForTransaction("any", "WHATEVER"))
-                .header("X-Forwarded-For", "8.8.8.8, 123.1.23.32")
+                .header("X-Forwarded-For", UNEXPECTED_IP_ADDRESS)
                 .contentType(TEXT_XML)
                 .post(NOTIFICATION_PATH)
                 .then()
