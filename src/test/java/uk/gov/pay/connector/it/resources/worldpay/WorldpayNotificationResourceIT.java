@@ -10,7 +10,6 @@ import uk.gov.pay.connector.app.ConnectorConfiguration;
 import uk.gov.pay.connector.app.ConnectorModule;
 import uk.gov.pay.connector.it.base.ChargingITestBase;
 import uk.gov.pay.connector.it.dao.DatabaseFixtures;
-import uk.gov.pay.connector.junit.ConfigOverride;
 import uk.gov.pay.connector.junit.DropwizardConfig;
 import uk.gov.pay.connector.junit.DropwizardJUnitRunner;
 import uk.gov.pay.connector.util.DnsPointerResourceRecord;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_XML;
 import static org.apache.commons.lang.math.RandomUtils.nextLong;
@@ -32,7 +30,6 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.connector.charge.model.domain.ChargeStatus.CAPTURED;
@@ -46,11 +43,14 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
 
     private static final String RESPONSE_EXPECTED_BY_WORLDPAY = "[OK]";
     private static final String NOTIFICATION_PATH = "/v1/api/notifications/worldpay";
+    private static final String WORLDPAY_IP_ADDRESS = "some-worldpay-ip";
+    private static final String UNEXPECTED_IP_ADDRESS = "8.8.8.8";
     private static ReverseDnsLookup reverseDnsLookup = mock(ReverseDnsLookup.class);
     
     @BeforeClass
     public static void before() {
-        when(reverseDnsLookup.lookup(any(DnsPointerResourceRecord.class))).thenReturn(Optional.of("hello.worldpay.com."));
+        when(reverseDnsLookup.lookup(new DnsPointerResourceRecord(WORLDPAY_IP_ADDRESS))).thenReturn(Optional.of("hello.worldpay.com."));
+        when(reverseDnsLookup.lookup(new DnsPointerResourceRecord(UNEXPECTED_IP_ADDRESS))).thenReturn(Optional.of("dns.google."));
     }
 
     public WorldpayNotificationResourceIT() {
@@ -58,7 +58,7 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
     }
 
     @Test
-    public void shouldHandleAChargeNotification() throws Exception {
+    public void shouldHandleAChargeNotification() {
         String transactionId = RandomIdGenerator.newId();
         String chargeId = createNewChargeWith(CAPTURE_SUBMITTED, transactionId);
 
@@ -126,7 +126,7 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
     }
 
     @Test
-    public void shouldIgnoreAuthorisedNotification() throws Exception {
+    public void shouldIgnoreAuthorisedNotification() {
 
         String transactionId = RandomIdGenerator.newId();
         String chargeId = createNewChargeWith(CAPTURED, transactionId);
@@ -176,18 +176,7 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
                 .then()
                 .statusCode(403);
     }
-
-    @Test
-    public void shouldReturnForbiddenIfXForwardedForHeaderIsMalformed() {
-        given().port(testContext.getPort())
-                .body(notificationPayloadForTransaction("any", "WHATEVER"))
-                .header("X-Forwarded-For", "something is wrong, 8.8.8.8")
-                .contentType(TEXT_XML)
-                .post(NOTIFICATION_PATH)
-                .then()
-                .statusCode(403);
-    }
-
+    
     @Test
     public void shouldReturnForbiddenIfXForwardedForHeaderIsMissing() {
         given().port(testContext.getPort())
@@ -217,10 +206,9 @@ public class WorldpayNotificationResourceIT extends ChargingITestBase {
     }
 
     private ValidatableResponse notifyConnector(String payload) {
-        String xForwardedForHeader = format("%s", "some-worldpay-ip");
         return given().port(testContext.getPort())
                 .body(payload)
-                .header("X-Forwarded-For", xForwardedForHeader)
+                .header("X-Forwarded-For", WORLDPAY_IP_ADDRESS)
                 .contentType(TEXT_XML)
                 .post(NOTIFICATION_PATH)
                 .then();
