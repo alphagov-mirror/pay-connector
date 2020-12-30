@@ -165,7 +165,7 @@ public class ChargesFrontendResource {
                 .withAmount(charge.getAmount())
                 .withDescription(charge.getDescription())
                 .withGatewayTransactionId(charge.getGatewayTransactionId())
-                .withCreatedDate(ZonedDateTime.ofInstant(charge.getCreatedDate(), ZoneOffset.UTC))
+                .withCreatedDate(charge.getCreatedDate())
                 .withReturnUrl(charge.getReturnUrl())
                 .withEmail(charge.getEmail())
                 .withFee(charge.getFeeAmount().orElse(null))

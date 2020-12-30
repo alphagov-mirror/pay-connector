@@ -373,7 +373,7 @@ public class ChargeServiceTest {
                 .withState(new ExternalTransactionState(externalChargeState.getStatus(), externalChargeState.isFinished(), externalChargeState.getCode(), externalChargeState.getMessage()))
                 .withGatewayTransactionId(chargeEntity.getGatewayTransactionId())
                 .withProviderName(chargeEntity.getGatewayAccount().getGatewayName())
-                .withCreatedDate(ZonedDateTime.ofInstant(chargeEntity.getCreatedDate(), ZoneOffset.UTC))
+                .withCreatedDate(chargeEntity.getCreatedDate())
                 .withEmail(chargeEntity.getEmail())
                 .withRefunds(refunds)
                 .withSettlement(settlement)
