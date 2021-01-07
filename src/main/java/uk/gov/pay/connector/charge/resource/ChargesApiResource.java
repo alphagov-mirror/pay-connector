@@ -3,10 +3,13 @@ package uk.gov.pay.connector.charge.resource;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.connector.charge.exception.TelephonePaymentNotificationsNotAllowedException;
 import uk.gov.pay.connector.charge.model.ChargeCreateRequest;
 import uk.gov.pay.connector.charge.model.telephone.TelephoneChargeCreateRequest;
 import uk.gov.pay.connector.charge.service.ChargeExpiryService;
 import uk.gov.pay.connector.charge.service.ChargeService;
+import uk.gov.pay.connector.gatewayaccount.exception.GatewayAccountNotFoundException;
+import uk.gov.pay.connector.gatewayaccount.service.GatewayAccountService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -47,11 +50,15 @@ public class ChargesApiResource {
     public static final int MAX_AMOUNT = 10_000_000;
     private final ChargeService chargeService;
     private final ChargeExpiryService chargeExpiryService;
+    private GatewayAccountService gatewayAccountService;
 
     @Inject
-    public ChargesApiResource(ChargeService chargeService, ChargeExpiryService chargeExpiryService) {
+    public ChargesApiResource(ChargeService chargeService,
+                              ChargeExpiryService chargeExpiryService,
+                              GatewayAccountService gatewayAccountService) {
         this.chargeService = chargeService;
         this.chargeExpiryService = chargeExpiryService;
+        this.gatewayAccountService = gatewayAccountService;
     }
 
     @GET
@@ -77,7 +84,7 @@ public class ChargesApiResource {
                 .map(response -> created(response.getLink("self")).entity(response).build())
                 .orElseGet(() -> notFoundResponse("Unknown gateway account: " + accountId));
     }
-    
+
     @POST
     @Path("v1/api/accounts/{accountId}/telephone-charges")
     @Produces(APPLICATION_JSON)
@@ -86,9 +93,16 @@ public class ChargesApiResource {
             @NotNull @Valid TelephoneChargeCreateRequest telephoneChargeCreateRequest,
             @Context UriInfo uriInfo
     ) {
-        return chargeService.findCharge(accountId, telephoneChargeCreateRequest)
-                .map(response -> Response.status(200).entity(response).build())
-                .orElseGet(() -> Response.status(201).entity(chargeService.create(telephoneChargeCreateRequest, accountId).get()).build());
+        return gatewayAccountService.getGatewayAccount(accountId).map(gatewayAccount -> {
+            if (!gatewayAccount.isAllowTelephonePaymentNotifications()) {
+                throw new TelephonePaymentNotificationsNotAllowedException(gatewayAccount.getId());
+            }
+            
+            return chargeService.findCharge(accountId, telephoneChargeCreateRequest)
+                    .map(response -> Response.status(200).entity(response).build())
+                    .orElseGet(() -> Response.status(201).entity(chargeService.createFromTelephonePaymentNotification(telephoneChargeCreateRequest, gatewayAccount)).build());
+
+        }).orElseThrow(() -> new GatewayAccountNotFoundException(accountId));
     }
 
     @POST
