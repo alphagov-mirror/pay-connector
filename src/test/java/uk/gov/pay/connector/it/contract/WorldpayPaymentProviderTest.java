@@ -67,7 +67,7 @@ import static uk.gov.pay.connector.model.domain.RefundEntityFixture.userEmail;
 import static uk.gov.pay.connector.model.domain.RefundEntityFixture.userExternalId;
 import static uk.gov.pay.connector.util.SystemUtils.envOrThrow;
 
-@Ignore("Ignoring as this test is failing in Jenkins because it's failing to locate the certificates - PP-1707")
+//@Ignore("Ignoring as this test is failing in Jenkins because it's failing to locate the certificates - PP-1707")
 public class WorldpayPaymentProviderTest {
 
     private static final String MAGIC_CARDHOLDER_NAME_THAT_MAKES_WORLDPAY_TEST_REQUIRE_3DS = "3D";
@@ -148,7 +148,7 @@ public class WorldpayPaymentProviderTest {
     @Test
     public void submitAuthRequestWithExemptionEngineFlag() {
         validGatewayAccount.setRequires3ds(true);
-        validGatewayAccount.setIntegrationVersion3ds(1);
+        validGatewayAccount.setIntegrationVersion3ds(2);
         validGatewayAccount.setWorldpay3dsFlexCredentialsEntity(aWorldpay3dsFlexCredentialsEntity().withExemptionEngine(true).build());
         
         WorldpayPaymentProvider paymentProvider = getValidWorldpayPaymentProvider();
